@@ -1,6 +1,8 @@
 <?php
 session_start();
-include '../config/koneksi.php';
+// include '../config/koneksi.php';
+include '../OOP/barang.php';
+$barang = new barang();
 // untuk admin
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Jika tidak, redirect ke login.php
@@ -34,6 +36,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
 <body id="page-top">
 
+    <?=
+    $barang->barang();
+    ?>
     <!-- Page Wrapper -->
     <div id="wrapper">
 

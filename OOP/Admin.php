@@ -1,13 +1,23 @@
 <?php
-require_once '../../config/koneksi.php';
+// require_once '../../config/koneksi.php';
 include 'User.php';
+include 'barang.php';
+include 'anggaran.php';
+
+
+
 class Admin extends User
 {
-    private $koneksi;
+    private $anggaran;
+    private $barang;
 
-    public function __construct($koneksi)
+    public function __construct()
     {
-        $this->koneksi = $koneksi;
+        require 'auth.php';
+        $koneksi = new DatabaseConnection();
+
+        $this->anggaran = new anggaran($koneksi);
+        $this->barang = new barang($koneksi);
     }
     private function antiinjection($data)
     {
@@ -15,6 +25,22 @@ class Admin extends User
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
         return mysqli_real_escape_string($this->koneksi, $data);
+    }
+
+
+
+    public function deleteBarang()
+    {
+
+        $barang->deleteBarang();
+    }
+
+    public function tambahAnggaran($data = [])
+    {
+        echo 'tes';
+        $barang = new barang();
+        $cek = $barang->tambahAnggaran($data);
+        return $cek;
     }
     public function tambahBarang()
     {
@@ -275,29 +301,37 @@ class Admin extends User
     }
     public function tabelAnggaran()
     {
-        $result = mysqli_query($this->koneksi, "SELECT * FROM anggaran");
+
+        $result = $this->anggaran->get_anggaran();
 
         if ($result) {
-            if (mysqli_num_rows($result) > 0) {
-                $no = 1;
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<tr>";
-                    echo "<td>" . $no++ . "</td>";
-                    echo "<td>" . $row['asal'] . "</td>";
-                    echo "<td>" . $row['tahun_penerimaan'] . "</td>";
-                    // Add action buttons with icons
-                    echo "<td>
+            // if (mysqli_num_rows($result) > 0) {
+            $no = 1;
+            foreach ($result as $row) {
+                echo "<tr>";
+                echo "<td>" . $no++ . "</td>";
+                echo "<td>" . $row['asal'] . "</td>";
+                echo "<td>" . $row['tahun_penerimaan'] . "</td>";
+                // Add action buttons with icons
+                echo "<td>
                                 <button type='button' class='btn btn-info btn-sm' data-bs-toggle='modal' data-bs-target='#editModal" . $row['idAnggaran'] . "'>Edit</button>
                                 <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#deleteModal" . $row['idAnggaran'] . " '>Delete</button>
                                 </td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='3'>Tidak ada data</td></tr>";
+                echo "</tr>";
             }
         } else {
-            echo "Error: " . mysqli_error($this->koneksi);
+            echo "<tr><td colspan='3'>Tidak ada data</td></tr>";
         }
+        // } else {
+        //     echo "Error: " . mysqli_error($this->koneksi);
+        // }
+    }
+
+    public function get_anggaran()
+    {
+
+        $result = $this->anggaran->get_anggaran();
+        return $result;
     }
 
     public function tabelUser()
@@ -340,4 +374,3 @@ class Admin extends User
         }
     }
 }
-?>

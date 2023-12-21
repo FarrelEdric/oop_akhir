@@ -1,9 +1,9 @@
 <?php
 session_start();
-include '../../config/koneksi.php';
+
 include '../../OOP/Admin.php';
-$koneksi = new DatabaseConnection();
-$Admin = new Admin($koneksi->getConnection());
+
+$Admin = new Admin();
 // untuk admin
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Jika tidak, redirect ke login.php
@@ -212,6 +212,26 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                                 <input type="text" id="search" class="form-control" onkeyup="searchTable()" placeholder="Cari..." style="max-width: 200px;">
                             </div> -->
                         </div>
+
+                        <!-- tes -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover" id="tabelAnggaran" width="100%" cellspacing="0">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Asal</th>
+                                        <th>Tahun Penerimaan</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $Admin->tabelAnggaran();
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+
                         <!-- The Modal -->
                         <div class="modal fade" id="myModal">
                             <div class="modal-dialog">
@@ -223,8 +243,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                                     </div>
                                     <!-- Modal Body -->
                                     <div class="modal-body">
-                                        <form action="tambah_anggaran.php" method="post" enctype="multipart/form-data">
+                                        <form action="../../function/tambah.php?jenis=tambahAnggaran" method="post" enctype="multipart/form-data">
                                             <div class="mb-3">
+
                                                 <label for="asal" class="form-label">Asal Anggaran</label>
                                                 <input type="text" name="asal" id="asal" class="form-control" required>
                                             </div>
@@ -245,23 +266,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                             </div>
                         </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover" id="tabelAnggaran" width="100%" cellspacing="0">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Asal</th>
-                                        <th>Tahun Penerimaan</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $Admin->tabelAnggaran();
-                                    ?>
-                                </tbody>
-                            </table>
-                        </div>
+
                     </div>
                 </div>
                 <script>
@@ -293,7 +298,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 </script>
                 <!-- Modal Edit -->
                 <?php
-                $result = mysqli_query($koneksi->getConnection(), "SELECT * FROM anggaran");
+                $result = $Admin->get_anggaran();
                 foreach ($result as $rowEdit) {
                 ?>
                     <div class="modal fade" id="editModal<?= $rowEdit['idAnggaran'] ?>">

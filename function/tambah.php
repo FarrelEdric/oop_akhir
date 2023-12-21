@@ -1,11 +1,19 @@
 <?php
 session_start();
 var_dump($_POST);
+include '../OOP/admin.php';
+// include '../config/koneksi.php';
+// $koneksi = new DatabaseConnection();
+$Admin = new Admin();
 
 if (!empty($_SESSION['username'])) {
-    require '../config/koneksi.php';
-    require '../function/pesan_kilat.php';
-    require '../function/anti_injection.php';
+
+    require 'pesan_kilat.php';
+    require 'anti_injection.php';
+
+
+
+
 
     if (isset($_POST['addnewbarang'])) {
         $kdBarang = antiinjection($koneksi, $_POST['kdBarang']);
@@ -41,24 +49,29 @@ if (!empty($_SESSION['username'])) {
 
         header("Location: ../admin/module/barang.php");
         exit();
-    } else if (isset($_POST['addnewanggaran'])) {
-        $asal = antiinjection($koneksi, $_POST['asal']);
-        $tahun_penerimaan = antiinjection($koneksi, $_POST['tahun_penerimaan']);
+    } else if ($_GET['jenis'] == 'tambahAnggaran') {
 
-        var_dump($asal, $tahun_penerimaan);
+
+        // $asal = antiinjection($koneksi, $_POST['asal']);
+        // $tahun_penerimaan = antiinjection($koneksi, $_POST['tahun_penerimaan']);
+        $data = $_POST;
+
+
 
         // Query SQL untuk anggaran
-        $addtotable_anggaran = mysqli_query($koneksi, "INSERT INTO anggaran (asal, tahun_penerimaan) VALUES ('$asal', '$tahun_penerimaan')");
+        $addtotable_anggaran = $Admin->tambahAnggaran($data);
+
 
         if ($addtotable_anggaran) {
             pesan('success', "Data Anggaran Baru Ditambahkan.");
+            header("Location: ../admin/module/anggaran.php");
         } else {
-            pesan('danger', "Menambahkan Data Anggaran Gagal: " . mysqli_error($koneksi));
-            echo "Query error: " . mysqli_error($koneksi);
-            die(mysqli_error($koneksi));
+            // pesan('danger', "Menambahkan Data Anggaran Gagal: " . mysqli_error($koneksi));
+            // echo "Query error: " . mysqli_error($koneksi);
+            // die(mysqli_error($koneksi));
         }
 
-        header("Location: ../admin/module/anggaran.php");
+
         exit();
     } else if (isset($_POST['addnewuser'])) {
         $nama_lengkap = $_POST['nama_lengkap'];
